@@ -9,7 +9,7 @@ sudo ufw allow 20/tcp
 sudo ufw allow 21/tcp
 
 # Allow FTP anonymous login
-sudo cp /data/new_vsftpd.conf /etc/vsftpd.conf
+sudo cp new_vsftpd.conf /etc/vsftpd.conf
 sudo mkdir -p /var/ftp/pub
 sudo chown www-data:www-data /var/ftp/pub
 sudo chmod 777 /var/ftp/pub
@@ -18,15 +18,23 @@ sudo systemctl restart vsftpd
 
 # Set up HTTP service.
 sudo apt-get install -y apache2
-sudo apt-get install -y libapache2-mod-php7.0
-sudo a2dismod mpm_event && sudo a2enmod mpm_prefork && sudo a2enmod php7.0
+sudo apt-get install -y libapache2-mod-php
+sudo a2dismod mpm_event && sudo a2enmod mpm_prefork && sudo a2enmod php7.2
 sudo ufw allow 'Apache'
 sudo cp apache2.conf /etc/apache2/apache2.conf
 
 # Set up LFI vulnerability
 sudo cp 000-default.conf /etc/apache2/sites-available/000-default.conf
 sudo cp -r development/ /var/www/html/
+sudo cp -r main_site/* /var/www/html/
 sudo systemctl restart apache2.service
 
+# Install Fail2Ban
+sudo apt-get install -y fail2ban
+sudo service fail2ban start
+
 # Local user backup password
-sudo bash -c 'echo "Y2VvcGMxMjMK" >> /var/backups/password.bak.b64'
+sudo bash -c 'echo "Y2VvcGMxMjMK" > /var/backups/password.bak.b64'
+
+# Set up log parser
+sudo cp logparse /usr/bin/

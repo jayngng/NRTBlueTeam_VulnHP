@@ -14,7 +14,7 @@ session_start();
 <?php
 
 if(!isset($_GET['view']) || ($_GET['view']=="index.php")) {
-   echo"<p><b>NRT Blue Team!</b><br><br>Currently, the website is under development!.</br></p>";
+   echo"<p><b>NRT Blue Team</b><br><br>Currently, the website is under development. Please comeback later!.</br></p>";
 }
 else {
 	echo "<p>";
