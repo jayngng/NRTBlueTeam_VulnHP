@@ -33,8 +33,8 @@ sudo systemctl restart apache2.service
 sudo apt-get install -y fail2ban
 sudo service fail2ban start
 
-# Local user backup password
-sudo bash -c 'echo "Y2VvcGMxMjMK" > /var/backups/password.bak.b64'
+# Privilege Escalation
+sudo chmod +s /usr/bin/find
 
 # Set up log parser
 sudo cp logparse /usr/bin/
