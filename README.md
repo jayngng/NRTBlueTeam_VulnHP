@@ -3,27 +3,25 @@
 <hr>
 
 ## **Honeypot Overview**
-Honeypot is a small project from NRT Blue Team. 
+Honeypot is a small project from NRT Blue Team. In the project, we are assigned to construct an intentional vulnerability to lure attackers for the goal of tracking them down during the hunt. 
 
-In the project, we are assigned to construct an intentional vulnerability to lure attackers for the goal of tracking them down during the hunt. 
+Within the scope of this document, we will focus on setting up the environment & pentesting it.
 
-Within the scope of this document, we will set up the environment and pentest it.
-
-+ **Contribution in the project:**
-	+ Cuong Nguyen: build the vulnerability & the blueprint for the attack.
-	+ Jaskaran Mann: reproduce & report the attack results.
-	+ Tung Nguyen: reproduce & report the attack results.
+**Contribution in the project:**
+	+ Build the vulnerability & the blueprint for the attack. (Cuong Nguyen)
+	+ Reproduce & report the attack results. (Jaskaran Mann)
+	+ Reproduce & report the attack results. (Tung Nguyen)
 
 <br>
 
 ## **Installation**
-1. Clone the repository.
+**1. Clone the repository.**
 
 ```bash
 git clone https://github.com/jayngng/NRTBlueTeam_VulnHP.git
 ```
 
-2. Executing the following command with `sudo` privilege.
+**2. Executing the following command with `sudo` privilege.**
 
 ```bash
 cd NRTBlueTeam_VulnHP
@@ -81,7 +79,7 @@ MAC Address: 08:00:27:06:9F:AA (Oracle VirtualBox virtual NIC)
 Nmap done: 1 IP address (1 host up) scanned in 0.27 seconds
 ```
 
-There are three opened services, let's us start with `ftp`.
+→ There are three running services. Let's us start with `ftp`.
 
 #### **FTP Enumeration**
 To access the `ftp` file share, we utilize the `ftp` command with the credentials of `anonymous:anonymous`.
