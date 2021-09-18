@@ -49,8 +49,8 @@ Please consider deleting the folder `NRTBlueTeam_VulnHP` after the Honeypot is f
 ## **Exploitation**
 
 **Overview of vulnerabilities on the box:**
-+ Initial Access: Local File Inclusion (LFI).
-+ Privilege Escalation: Misconfigured SUID binary.
++ **Initial Access:** Local File Inclusion (LFI).
++ **Privilege Escalation:** Misconfigured SUID binary.
 
 **IP Addresses of engagement:**
 + **Attack IP:** 192.168.12.1 
@@ -163,7 +163,7 @@ The result indicates the `test` file has been successfully uploaded.
 #### **HTTP Service**
 Now, let's move on to enumerating the hidden directory with `gobuster`.
 
-To install the `gobuster`, we execute
+To install the `gobuster`, we execute the following command:
 
 ```bash
 $ sudo apt-get install -y gobuster
@@ -199,6 +199,8 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 
 → Looking at the outputs, we then drop our attention toward the `/development` directory.
 
+#### **Local File Inclusion (LFI)**
+
 Navigate to the `/development/` directory →  Click on `ABOUT US`, we are redirected to a new `about-us` page.
 
 Notice that the entry URL of the page is: `...?view=about-us.html`, which might be vulnerable to **Local File Inclusion (LFI)**. To test our theory, we utilize `curl`.
@@ -218,7 +220,7 @@ ftp:x:112:118:ftp daemon,,,:/srv/ftp:/bin/false
 
 The result successfully returns the content of the `passwd` file in the target system. At this point, we comprehend that the target is vulnerable to LFI.
 
-#### LFI → Remote Code Execution (RCE)
+#### **LFI → Remote Code Execution (RCE)**
 Recalling the `pubf.txt` file we discovered previously, let's us pull a reverse shell by following the below steps.
 
 **[1]. Upload a [php reverse shell](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php) onto the `ftp` file share.**
@@ -272,9 +274,9 @@ $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 ```
 
-### Privilege Escalation
+### **Privilege Escalation**
 
-#### SUID Abuse
+#### **SUID Abuse**
 Local enumeration divulges a misconfigured `SUID` binary that we can abuse to escalate your privilege.
 
 ```bash
