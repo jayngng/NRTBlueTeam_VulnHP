@@ -9,7 +9,7 @@ In the project, we are assigned to construct an intentional vulnerability to lur
 
 Within the scope of this document, we will set up the environment and pentest it.
 
-+ Team members engage in the project:
++ **Contribution in the project:**
 	+ Cuong Nguyen: build the vulnerability & the blueprint for the attack.
 	+ Jaskaran Mann: reproduce & report the attack results.
 	+ Tung Nguyen: reproduce & report the attack results.
@@ -50,17 +50,15 @@ Please consider deleting the folder `NRTBlueTeam_VulnHP` after the Honeypot is f
 
 ## **Exploitation**
 
-In this section, we will exploit the target.
-
-Overview of vulnerabilities on the box:
+**Overview of vulnerabilities on the box:**
 + Initial Access: Local File Inclusion (LFI).
 + Privilege Escalation: Misconfigured SUID binary.
 
-| **Attack IP** | 192.168.12.1  |
+**IP Addresses of engagement:**
++ **Attack IP:** 192.168.12.1 
++ **Target IP:** 192.168.12.10
 
-| **Target IP** | 192.168.12.10 |
-
-***Note***: Please notice that the IP address might be varied in different environment.
+***Note***: Please notice that the IP addresses might be varied in different environments.
 
 ### **Enumeration**
 We'll begin with a `nmap` scan with the tag `-sS` for half-way handshake scan (or SYN scan).
