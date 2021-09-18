@@ -8,9 +8,9 @@ Honeypot is a small project from NRT Blue Team. In the project, we are assigned 
 Within the scope of this document, we will focus on setting up the environment & pentesting it.
 
 **Contribution in the project:**
-	+ Build the vulnerability & the blueprint for the attack. (Cuong Nguyen)
-	+ Reproduce & report the attack results. (Jaskaran Mann)
-	+ Reproduce & report the attack results. (Tung Nguyen)
++ Build the vulnerability & the blueprint for the attack. (Cuong Nguyen)
++ Reproduce & report the attack results. (Jaskaran Mann)
++ Reproduce & report the attack results. (Tung Nguyen)
 
 <br>
 
